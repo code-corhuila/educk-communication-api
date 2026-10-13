@@ -1,0 +1,10 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: educk-communication-api
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER:mongo_admin}:${MONGO_PASSWORD:mongo_secret}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:communication_db}?authSource=admin
+      auto-index-creation: true
