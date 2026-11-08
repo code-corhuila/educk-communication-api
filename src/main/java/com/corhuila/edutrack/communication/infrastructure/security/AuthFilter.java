@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -38,7 +39,7 @@ public class AuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
@@ -50,7 +51,7 @@ public class AuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ") || header.length() <= 7) {
@@ -61,10 +62,11 @@ public class AuthFilter extends OncePerRequestFilter {
             Rs256Verifier.VerifiedPrincipal principal = verifier.verify(header.substring(7).trim(), Instant.now());
             request.setAttribute(PRINCIPAL_ATTRIBUTE, principal);
             request.setAttribute(SUBJECT_ATTRIBUTE, principal.userId().toString());
-            chain.doFilter(request, response);
         } catch (Rs256Verifier.InvalidTokenException e) {
             reject(response, "the token is invalid or has expired");
+            return;
         }
+        chain.doFilter(request, response);
     }
 
     private void reject(HttpServletResponse response, String message) throws IOException {
