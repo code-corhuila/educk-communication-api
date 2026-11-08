@@ -67,6 +67,9 @@ public class Rs256Verifier {
             if (now.getEpochSecond() > claims.get("exp").asLong() + LEEWAY_SECONDS) {
                 throw new InvalidTokenException("expired");
             }
+            if (claims.path("nbf").isNumber() && now.getEpochSecond() + LEEWAY_SECONDS < claims.get("nbf").asLong()) {
+                throw new InvalidTokenException("not yet valid");
+            }
             if (!EXPECTED_ISSUER.equals(claims.path("iss").asText())) {
                 throw new InvalidTokenException("invalid issuer");
             }
