@@ -23,3 +23,9 @@ branch into another: `merge develop -> qa` and `merge qa -> main` do not exist i
 rule.
 
 Full policy: `00-governance/branching-policy.md` in `library-docs`.
+
+## Token verification (RS256)
+
+Every route under `/api/` (except `/api/v1/messages/health`) requires an `RS256` bearer token issued by `educk-identity-api`.
+Configure `JWT_PUBLIC_KEY` (X.509 SPKI PEM) in the environment; the service fails fast on startup if missing or invalid.
+Message `senderId` is always bound to the verified token `sub` UUID rather than trusting request payloads.

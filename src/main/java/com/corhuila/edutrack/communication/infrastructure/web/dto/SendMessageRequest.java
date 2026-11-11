@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record SendMessageRequest(
-    @NotNull UUID senderId,
+    UUID senderId,
     @NotNull UUID receiverId,
     UUID subjectId,
     @NotBlank @Size(max = 2000) String content
